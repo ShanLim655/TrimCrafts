@@ -1,0 +1,77 @@
+name: TrimCraft
+version: '${project.version}'
+main: com.trimcraft.TrimCraftPlugin
+api-version: '1.21'
+description: Powerful armor trim abilities for Minecraft 1.21+
+authors: [TrimCraft]
+website: https://trimcraft.example.com
+
+commands:
+  trimcraft:
+    description: TrimCraft main command
+    aliases: [tc]
+    usage: /trimcraft <reload|info|list>
+    permission: trimcraft.admin
+  triminfo:
+    description: View info about your current trim abilities
+    usage: /triminfo
+    permission: trimcraft.use
+
+permissions:
+  trimcraft.admin:
+    description: Access to admin commands
+    default: op
+  trimcraft.use:
+    description: Access to trim abilities
+    default: true
+  trimcraft.trim.silence:
+    description: Use Silence trim abilities
+    default: true
+  trimcraft.trim.wild:
+    description: Use Wild trim abilities
+    default: true
+  trimcraft.trim.coast:
+    description: Use Coast trim abilities
+    default: true
+  trimcraft.trim.dune:
+    description: Use Dune trim abilities
+    default: true
+  trimcraft.trim.eye:
+    description: Use Eye trim abilities
+    default: true
+  trimcraft.trim.host:
+    description: Use Host trim abilities
+    default: true
+  trimcraft.trim.raiser:
+    description: Use Raiser trim abilities
+    default: true
+  trimcraft.trim.sentry:
+    description: Use Sentry trim abilities
+    default: true
+  trimcraft.trim.shaper:
+    description: Use Shaper trim abilities
+    default: true
+  trimcraft.trim.snout:
+    description: Use Snout trim abilities
+    default: true
+  trimcraft.trim.spire:
+    description: Use Spire trim abilities
+    default: true
+  trimcraft.trim.tide:
+    description: Use Tide trim abilities
+    default: true
+  trimcraft.trim.vex:
+    description: Use Vex trim abilities
+    default: true
+  trimcraft.trim.ward:
+    description: Use Ward trim abilities
+    default: true
+  trimcraft.trim.wayfinder:
+    description: Use Wayfinder trim abilities
+    default: true
+  trimcraft.trim.bolt:
+    description: Use Bolt trim abilities
+    default: true
+  trimcraft.trim.flow:
+    description: Use Flow trim abilities
+    default: true

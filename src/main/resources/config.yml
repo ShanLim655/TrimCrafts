@@ -1,0 +1,381 @@
+# ============================================================
+#   TrimCraft Configuration - Minecraft 1.21+ Armor Trim Plugin
+#   Author: TrimCraft Team
+#============================================================
+
+# General settings
+general:
+  # Prefix shown in chat messages
+  prefix: "&8[&6TrimCraft&8] &r"
+  # Language for messages (en)
+  language: "en"
+  # Whether to show ability descriptions in chat when equipping armor
+  show-equip-messages: true
+  # Whether to display cooldown above XP bar (action bar)
+  show-cooldown-bar: true
+  # Show trim HUD (scoreboard sidebar) when wearing a full trim set
+  show-hud: true
+  # Apply custom lore to trim smithing template items
+  apply-trim-lore: true
+  # Update checker (disable if no internet)
+  check-updates: true
+
+# ── DATABASE ─────────────────────────────────────────────────
+# Choose 'sqlite' (default, no setup needed) or 'mysql'
+database:
+  type: sqlite
+  sqlite:
+    file: trimcraft.db
+  mysql:
+    host: localhost
+    port: 3306
+    database: trimcraft
+    username: root
+    password: password
+
+# ── SCOREBOARD HUD ───────────────────────────────────────────
+# Shown on the sidebar when wearing a full matching trim set
+hud:
+  enabled: true
+  show-ability-names: true
+  show-keybinds: true
+  show-descriptions: true
+  show-separator: true
+
+# ── EQUIP TITLE ──────────────────────────────────────────────
+# Title shown on screen when you equip a full trim set
+equip-title:
+  enabled: true
+  fade-in: 10    # ticks
+  stay: 50       # ticks
+  fade-out: 15   # ticks
+
+# Cooldown settings (in seconds)
+cooldowns:
+  # ── SILENCE TRIM ──────────────────────────────────────────
+  silence-life-force-suction: 30
+  silence-silence-ability: 45
+
+  # ── WILD TRIM ─────────────────────────────────────────────
+  wild-nature-bond: 20
+  wild-beast-rage: 35
+
+  # ── COAST TRIM ────────────────────────────────────────────
+  coast-tidal-wave: 25
+  coast-sea-shield: 40
+
+  # ── DUNE TRIM ─────────────────────────────────────────────
+  dune-sandstorm: 30
+  dune-mirages: 50
+
+  # ── EYE TRIM ──────────────────────────────────────────────
+  eye-divine-sight: 25
+  eye-curse-of-sight: 40
+
+  # ── HOST TRIM ─────────────────────────────────────────────
+  host-spectral-anchor: 35
+  host-undying-will: 60
+
+  # ── RAISER TRIM ───────────────────────────────────────────
+  raiser-raise-dead: 45
+  raiser-death-mark: 30
+
+  # ── SENTRY TRIM ───────────────────────────────────────────
+  sentry-iron-wall: 20
+  sentry-execute: 60
+
+  # ── SHAPER TRIM ───────────────────────────────────────────
+  shaper-warp: 15
+  shaper-gravity-crush: 40
+
+  # ── SNOUT TRIM ────────────────────────────────────────────
+  snout-brute-charge: 20
+  snout-war-cry: 45
+
+  # ── SPIRE TRIM ────────────────────────────────────────────
+  spire-inferno-strike: 25
+  spire-fire-shield: 40
+
+  # ── TIDE TRIM ─────────────────────────────────────────────
+  tide-tsunami: 30
+  tide-abyssal-form: 50
+
+  # ── VEX TRIM ──────────────────────────────────────────────
+  vex-phantom-dash: 10
+  vex-ethereal-blade: 35
+
+  # ── WARD TRIM ─────────────────────────────────────────────
+  ward-reflect: 20
+  ward-sanctuary: 55
+
+  # ── WAYFINDER TRIM ────────────────────────────────────────
+  wayfinder-phase-step: 12
+  wayfinder-cartographers-curse: 50
+
+  # ── BOLT TRIM ─────────────────────────────────────────────
+  bolt-lightning-strike: 15
+  bolt-storm-armor: 45
+
+  # ── FLOW TRIM ─────────────────────────────────────────────
+  flow-time-warp: 40
+  flow-temporal-shield: 55
+
+# ── SILENCE TRIM ────────────────────────────────────────────
+silence:
+  enabled: true
+  # Prevent players from duplicating the Silence Armor Trim at a crafting table
+  anti-dupe: true
+  # Life Force Suction (Shift + Left Click)
+  life-force-suction:
+    duration-ticks: 80  # 4 seconds = 80 ticks
+    drain-per-tick: 0.5  # HP drained per tick
+    # Multiplier based on armor material
+    multipliers:
+      leather: 0.6
+      chainmail: 0.7
+      iron: 0.8
+      gold: 0.75
+      diamond: 1.0
+      netherite: 1.4
+    require-full-set: true
+    particle-color:
+      r: 150
+      g: 0
+      b: 200
+  # Silence (Shift + Right Click)
+  silence-ability:
+    blindness-duration: 300   # ticks (15s)
+    slowness-duration: 200    # ticks (10s)
+    slowness-amplifier: 2     # Slowness III = amplifier 2
+    nausea-duration: 100      # ticks (5s)
+    weakness-duration: 200    # ticks (10s)
+    extra-slowness-duration: 300  # ticks (15s)
+    range: 10.0
+    require-full-set: true
+
+# ── WILD TRIM ───────────────────────────────────────────────
+wild:
+  enabled: true
+  nature-bond:
+    healing-per-second: 1.5
+    duration-ticks: 100  # 5 seconds
+    speed-amplifier: 1
+    require-full-set: false
+    particle-color:
+      r: 0
+      g: 200
+      b: 50
+  beast-rage:
+    strength-amplifier: 2
+    speed-amplifier: 1
+    duration-ticks: 120  # 6 seconds
+    damage-boost: 3.0
+    require-full-set: false
+
+# ── COAST TRIM ──────────────────────────────────────────────
+coast:
+  enabled: true
+  tidal-wave:
+    radius: 8.0
+    knockback-power: 2.5
+    slowness-duration: 60
+    require-full-set: false
+  sea-shield:
+    absorption-hearts: 4
+    duration-ticks: 100
+    water-breathing-duration: 200
+    require-full-set: true
+
+# ── DUNE TRIM ───────────────────────────────────────────────
+dune:
+  enabled: true
+  sandstorm:
+    radius: 6.0
+    blindness-duration: 60
+    slowness-duration: 80
+    damage: 2.0
+    require-full-set: false
+  mirages:
+    decoy-count: 3
+    decoy-duration-ticks: 80
+    require-full-set: true
+
+# ── EYE TRIM ────────────────────────────────────────────────
+eye:
+  enabled: true
+  divine-sight:
+    glowing-duration: 200
+    night-vision-duration: 200
+    radius: 30.0
+    require-full-set: false
+  curse-of-sight:
+    blindness-duration: 100
+    glowing-duration: 100
+    range: 12.0
+    require-full-set: true
+
+# ── HOST TRIM ───────────────────────────────────────────────
+host:
+  enabled: true
+  spectral-anchor:
+    pull-distance: 15.0
+    require-full-set: false
+  undying-will:
+    totem-effect-duration: 100
+    regeneration-duration: 60
+    require-full-set: true
+
+# ── RAISER TRIM ─────────────────────────────────────────────
+raiser:
+  enabled: true
+  raise-dead:
+    zombie-count: 3
+    zombie-duration-ticks: 400
+    require-full-set: true
+  death-mark:
+    vulnerability-amplifier: 1
+    duration-ticks: 100
+    range: 10.0
+    require-full-set: false
+
+# ── SENTRY TRIM ─────────────────────────────────────────────
+sentry:
+  enabled: true
+  iron-wall:
+    resistance-amplifier: 1
+    duration-ticks: 120
+    require-full-set: false
+  execute:
+    threshold-percent: 20.0
+    bonus-damage: 10.0
+    require-full-set: true
+
+# ── SHAPER TRIM ─────────────────────────────────────────────
+shaper:
+  enabled: true
+  warp:
+    max-distance: 20.0
+    require-full-set: false
+  gravity-crush:
+    radius: 6.0
+    damage: 4.0
+    slowness-duration: 60
+    require-full-set: true
+
+# ── SNOUT TRIM ──────────────────────────────────────────────
+snout:
+  enabled: true
+  brute-charge:
+    dash-power: 1.8
+    damage: 5.0
+    require-full-set: false
+  war-cry:
+    radius: 10.0
+    strength-duration: 100
+    require-full-set: false
+
+# ── SPIRE TRIM ──────────────────────────────────────────────
+spire:
+  enabled: true
+  inferno-strike:
+    fire-ticks: 80
+    damage: 3.0
+    range: 5.0
+    require-full-set: false
+  fire-shield:
+    protection-duration: 100
+    reflect-fire: true
+    require-full-set: true
+
+# ── TIDE TRIM ───────────────────────────────────────────────
+tide:
+  enabled: true
+  tsunami:
+    wave-radius: 10.0
+    knockback-power: 3.0
+    require-full-set: false
+  abyssal-form:
+    water-breathing-duration: 400
+    speed-in-water-amplifier: 2
+    damage-in-water-boost: 4.0
+    duration-ticks: 200
+    require-full-set: true
+
+# ── VEX TRIM ────────────────────────────────────────────────
+vex:
+  enabled: true
+  phantom-dash:
+    dashes: 3
+    speed-amplifier: 3
+    invincibility-ticks: 10
+    require-full-set: false
+  ethereal-blade:
+    damage: 8.0
+    range: 6.0
+    phasing: true
+    require-full-set: true
+
+# ── WARD TRIM ───────────────────────────────────────────────
+ward:
+  enabled: true
+  reflect:
+    reflect-percent: 75.0
+    duration-ticks: 60
+    require-full-set: false
+  sanctuary:
+    radius: 8.0
+    duration-ticks: 200
+    healing-per-second: 1.0
+    require-full-set: true
+
+# ── WAYFINDER TRIM ──────────────────────────────────────────
+wayfinder:
+  enabled: true
+  phase-step:
+    blink-distance: 15.0
+    require-full-set: false
+  cartographers-curse:
+    disorientation-duration: 200
+    range: 12.0
+    require-full-set: true
+
+# ── BOLT TRIM ───────────────────────────────────────────────
+bolt:
+  enabled: true
+  lightning-strike:
+    damage: 6.0
+    radius: 3.0
+    stun-duration: 40
+    require-full-set: false
+  storm-armor:
+    shock-chance: 25
+    shock-damage: 2.0
+    duration-ticks: 200
+    require-full-set: true
+
+# ── FLOW TRIM ───────────────────────────────────────────────
+flow:
+  enabled: true
+  time-warp:
+    slow-duration-ticks: 60
+    haste-amplifier: 2
+    radius: 8.0
+    require-full-set: true
+  temporal-shield:
+    rewind-seconds: 3
+    duration-ticks: 100
+    require-full-set: true
+
+# ── RIB TRIM ────────────────────────────────────────────────
+rib:
+  enabled: true
+  bone-cage:
+    range: 6.0
+    slow-duration-ticks: 80
+    blind-duration-ticks: 60
+    fatigue-duration-ticks: 100
+    require-full-set: true
+  nether-fortitude:
+    duration-ticks: 120
+    absorption-hearts: 4
+    require-full-set: true
