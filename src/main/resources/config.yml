@@ -36,7 +36,7 @@ database:
 # ── SCOREBOARD HUD ───────────────────────────────────────────
 # Shown on the sidebar when wearing a full matching trim set
 hud:
-  enabled: true
+  enabled: false
   show-ability-names: true
   show-keybinds: true
   show-descriptions: true
