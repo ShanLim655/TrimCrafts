@@ -15,7 +15,7 @@ public class SentryExecute extends TrimAbility {
 
     @Override public String getName() { return "Execute"; }
     @Override public String getDescription() {
-        return "Judgement falls — any nearby enemy below 20% HP is instantly struck down by the Sentry's divine punishment.";
+        return "Deliver a heavy finishing strike to nearby enemies already weakened in battle.";
     }
     @Override public String getCooldownKey() { return "sentry-execute"; }
     @Override public int getDefaultCooldown() { return 60; }

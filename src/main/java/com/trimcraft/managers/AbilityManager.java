@@ -2,8 +2,6 @@ package com.trimcraft.managers;
 
 import com.trimcraft.TrimCraftPlugin;
 import com.trimcraft.abilities.*;
-import org.bukkit.entity.Player;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,10 +36,6 @@ public class AbilityManager {
         trimAbilities.put("rib", new TrimAbility[]{new RibBoneCage(plugin), new RibNetherFortitude(plugin)});
     }
 
-    public void reload() {
-        trimAbilities.clear();
-        registerAll();
-    }
 
     public TrimAbility[] getAbilities(String trim) {
         return trimAbilities.getOrDefault(trim, new TrimAbility[0]);

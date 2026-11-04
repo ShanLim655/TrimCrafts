@@ -112,6 +112,6 @@ touch trimcraft-plugin/src/main/java/com/trimcraft/abilities/FlowTemporalShield.
 
 ```bash
 cd trimcraft-plugin
-mvn clean package
-# Output: target/TrimCraft-1.0.0.jar
+mvn -B clean verify
+Output: target/TrimCraft-3.1.0.jar
 ```

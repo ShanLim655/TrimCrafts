@@ -16,7 +16,7 @@ public class HostUndyingWill extends TrimAbility {
 
     @Override public String getName() { return "Undying Will"; }
     @Override public String getDescription() {
-        return "Passive fortitude — when near death, the spirit world grants you a burst of regeneration and resistance, refusing to let you fall.";
+        return "Call on the spirit world for a brief burst of regeneration, resistance, and fire resistance.";
     }
     @Override public String getCooldownKey() { return "host-undying-will"; }
     @Override public int getDefaultCooldown() { return 60; }

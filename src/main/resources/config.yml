@@ -36,7 +36,7 @@ database:
 # ── SCOREBOARD HUD ───────────────────────────────────────────
 # Shown on the sidebar when wearing a full matching trim set
 hud:
-  enabled: false
+  enabled: true
   show-ability-names: true
   show-keybinds: true
   show-descriptions: true
@@ -149,7 +149,6 @@ silence:
     slowness-amplifier: 2     # Slowness III = amplifier 2
     nausea-duration: 100      # ticks (5s)
     weakness-duration: 200    # ticks (10s)
-    extra-slowness-duration: 300  # ticks (15s)
     range: 10.0
     require-full-set: true
 
@@ -233,7 +232,7 @@ raiser:
     zombie-duration-ticks: 400
     require-full-set: true
   death-mark:
-    vulnerability-amplifier: 1
+    damage-multiplier: 1.35
     duration-ticks: 100
     range: 10.0
     require-full-set: false
@@ -293,6 +292,8 @@ tide:
   tsunami:
     wave-radius: 10.0
     knockback-power: 3.0
+    damage: 4.0
+    slowness-duration: 40
     require-full-set: false
   abyssal-form:
     water-breathing-duration: 400

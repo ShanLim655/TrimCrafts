@@ -1,12 +1,13 @@
 package com.trimcraft.config;
 
 import com.trimcraft.TrimCraftPlugin;
+import com.trimcraft.abilities.TrimAbility;
 import org.bukkit.configuration.file.FileConfiguration;
 
 public class TrimCraftConfig {
 
     private final TrimCraftPlugin plugin;
-    private FileConfiguration config;
+    private final FileConfiguration config;
 
     public TrimCraftConfig(TrimCraftPlugin plugin) {
         this.plugin = plugin;
@@ -26,7 +27,7 @@ public class TrimCraftConfig {
     }
 
     public boolean isShowHUD() {
-        return config.getBoolean("general.show-hud", true);
+        return config.getBoolean("general.show-hud", true) && config.getBoolean("hud.enabled", true);
     }
 
     public boolean isApplyTrimLore() {
@@ -58,23 +59,31 @@ public class TrimCraftConfig {
     }
 
     public int getEquipTitleFadeIn() {
-        return config.getInt("equip-title.fade-in", 10);
+        return Math.max(0, config.getInt("equip-title.fade-in", 10));
     }
 
     public int getEquipTitleStay() {
-        return config.getInt("equip-title.stay", 50);
+        return Math.max(0, config.getInt("equip-title.stay", 50));
     }
 
     public int getEquipTitleFadeOut() {
-        return config.getInt("equip-title.fade-out", 15);
+        return Math.max(0, config.getInt("equip-title.fade-out", 15));
     }
 
     public boolean isTrimEnabled(String trim) {
         return config.getBoolean(trim + ".enabled", true);
     }
 
-    public int getCooldown(String key) {
-        return config.getInt("cooldowns." + key, 30);
+    public boolean isFullSetRequired(TrimAbility ability) {
+        String trim = ability.getCooldownKey();
+        String prefix = ability.getCooldownKey().split("-", 2)[0] + "-";
+        if (!trim.startsWith(prefix)) return true;
+        String abilityKey = trim.substring(prefix.length());
+        return config.getBoolean(prefix.substring(0, prefix.length() - 1) + "." + abilityKey + ".require-full-set", true);
+    }
+
+    public int getCooldown(String key, int fallback) {
+        return Math.max(0, config.getInt("cooldowns." + key, fallback));
     }
 
     public int getInt(String path, int def) {
@@ -93,8 +102,8 @@ public class TrimCraftConfig {
         return colorize(config.getString(path, def));
     }
 
-    private String colorize(String s) {
-        if (s == null) return "";
-        return s.replace("&", "\u00A7");
+    private String colorize(String value) {
+        if (value == null) return "";
+        return value.replace("&", "\u00A7");
     }
 }

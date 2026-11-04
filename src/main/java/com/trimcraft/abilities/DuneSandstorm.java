@@ -1,6 +1,7 @@
 package com.trimcraft.abilities;
 
 import com.trimcraft.TrimCraftPlugin;
+import com.trimcraft.utils.CombatUtils;
 import com.trimcraft.utils.MessageUtils;
 import com.trimcraft.utils.ParticleUtils;
 import org.bukkit.Location;
@@ -36,7 +37,7 @@ public class DuneSandstorm extends TrimAbility {
         player.getWorld().playSound(center, org.bukkit.Sound.BLOCK_SAND_BREAK, 2f, 0.5f);
 
         for (Entity entity : player.getWorld().getNearbyEntities(center, radius, radius, radius)) {
-            if (entity == player || !(entity instanceof LivingEntity living)) continue;
+            if (!(entity instanceof LivingEntity living) || !CombatUtils.canTarget(player, entity)) continue;
             living.damage(damage, player);
             if (entity instanceof Player target) {
                 target.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, blindDur, 0, false, true));

@@ -2,9 +2,9 @@ name: TrimCraft
 version: '${project.version}'
 main: com.trimcraft.TrimCraftPlugin
 api-version: '1.21'
-description: Powerful armor trim abilities for Minecraft 1.21+
-authors: [TrimCraft]
-website: https://trimcraft.example.com
+description: Armor trim abilities for Minecraft 1.21+
+authors: [ShanLim655]
+website: https://github.com/ShanLim655/TrimCrafts
 
 commands:
   trimcraft:
@@ -74,4 +74,7 @@ permissions:
     default: true
   trimcraft.trim.flow:
     description: Use Flow trim abilities
+    default: true
+  trimcraft.trim.rib:
+    description: Use Rib trim abilities
     default: true

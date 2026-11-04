@@ -7,11 +7,12 @@ import com.trimcraft.listeners.ArmorChangeListener;
 import com.trimcraft.listeners.PlayerInputListener;
 import com.trimcraft.listeners.TrimItemListener;
 import com.trimcraft.managers.AbilityManager;
-import com.trimcraft.managers.CooldownManager;
 import com.trimcraft.managers.ActiveEffectsManager;
+import com.trimcraft.managers.CooldownManager;
 import com.trimcraft.managers.DatabaseManager;
 import com.trimcraft.managers.TrimHUDManager;
 import com.trimcraft.managers.TrimLoreManager;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class TrimCraftPlugin extends JavaPlugin {
@@ -28,7 +29,6 @@ public class TrimCraftPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
-
         saveDefaultConfig();
         trimConfig = new TrimCraftConfig(this);
 
@@ -45,17 +45,26 @@ public class TrimCraftPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new PlayerInputListener(this), this);
         getServer().getPluginManager().registerEvents(new TrimItemListener(this), this);
 
-        getCommand("trimcraft").setExecutor(new TrimCraftCommand(this));
-        getCommand("triminfo").setExecutor(new TrimInfoCommand(this));
+        PluginCommand trimCraftCommand = getCommand("trimcraft");
+        PluginCommand trimInfoCommand = getCommand("triminfo");
+        if (trimCraftCommand == null || trimInfoCommand == null) {
+            getLogger().severe("Required commands are missing from plugin.yml. Disabling TrimCraft.");
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
 
-        getLogger().info("TrimCraft v" + getDescription().getVersion() + " enabled! Trim the darkness.");
+        trimCraftCommand.setExecutor(new TrimCraftCommand(this));
+        trimInfoCommand.setExecutor(new TrimInfoCommand(this));
+        getLogger().info("TrimCraft v" + getDescription().getVersion() + " enabled.");
     }
 
     @Override
     public void onDisable() {
-        if (cooldownManager != null) cooldownManager.saveCooldowns();
+        if (activeEffectsManager != null) activeEffectsManager.cancelAll();
         if (trimHUDManager != null) trimHUDManager.hideAll();
+        if (cooldownManager != null) cooldownManager.saveCooldowns();
         if (databaseManager != null) databaseManager.disconnect();
+        instance = null;
         getLogger().info("TrimCraft disabled.");
     }
 
@@ -94,8 +103,6 @@ public class TrimCraftPlugin extends JavaPlugin {
     public void reload() {
         reloadConfig();
         trimConfig = new TrimCraftConfig(this);
-        cooldownManager.clearAll();
-        abilityManager.reload();
-        getLogger().info("TrimCraft reloaded.");
+        getLogger().info("TrimCraft configuration reloaded.");
     }
 }
