@@ -1,6 +1,7 @@
 package com.trimcraft.abilities;
 
 import com.trimcraft.TrimCraftPlugin;
+import com.trimcraft.utils.CombatUtils;
 import com.trimcraft.utils.MessageUtils;
 import com.trimcraft.utils.ParticleUtils;
 import org.bukkit.Location;
@@ -36,8 +37,10 @@ public class CoastTidalWave extends TrimAbility {
         player.getWorld().playSound(center, org.bukkit.Sound.ENTITY_GENERIC_SPLASH, 2f, 0.5f);
 
         for (Entity entity : player.getWorld().getNearbyEntities(center, radius, radius / 2, radius)) {
-            if (entity == player || !(entity instanceof LivingEntity living)) continue;
-            Vector dir = entity.getLocation().toVector().subtract(center.toVector()).normalize();
+            if (!(entity instanceof LivingEntity living) || !CombatUtils.canTarget(player, entity)) continue;
+            Vector dir = entity.getLocation().toVector().subtract(center.toVector());
+            if (dir.lengthSquared() < 0.0001) dir = player.getLocation().getDirection().multiply(-1);
+            dir.normalize();
             dir.setY(0.4);
             entity.setVelocity(dir.multiply(knockback));
             if (entity instanceof Player target) {

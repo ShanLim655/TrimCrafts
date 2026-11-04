@@ -53,9 +53,11 @@ public class TrimHUDManager {
 
     public void hideHUD(Player player) {
         UUID uuid = player.getUniqueId();
-        playerBoards.remove(uuid);
+        Scoreboard active = playerBoards.remove(uuid);
         Scoreboard previous = previousBoards.remove(uuid);
-        if (previous != null) player.setScoreboard(previous);
+        if (previous != null && active != null && player.getScoreboard() == active) {
+            player.setScoreboard(previous);
+        }
     }
 
     public void hideAll() {

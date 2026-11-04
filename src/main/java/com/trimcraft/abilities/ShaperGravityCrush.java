@@ -1,6 +1,7 @@
 package com.trimcraft.abilities;
 
 import com.trimcraft.TrimCraftPlugin;
+import com.trimcraft.utils.CombatUtils;
 import com.trimcraft.utils.MessageUtils;
 import com.trimcraft.utils.ParticleUtils;
 import org.bukkit.Location;
@@ -33,7 +34,7 @@ public class ShaperGravityCrush extends TrimAbility {
 
         Location center = player.getLocation();
         for (Entity entity : player.getWorld().getNearbyEntities(center, radius, radius, radius)) {
-            if (entity == player || !(entity instanceof LivingEntity living)) continue;
+            if (!(entity instanceof LivingEntity living) || !CombatUtils.canTarget(player, entity)) continue;
             Vector down = new Vector(0, -2.0, 0);
             entity.setVelocity(down);
             living.damage(damage, player);

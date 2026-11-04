@@ -1,6 +1,7 @@
 package com.trimcraft.abilities;
 
 import com.trimcraft.TrimCraftPlugin;
+import com.trimcraft.utils.CombatUtils;
 import com.trimcraft.utils.MessageUtils;
 import com.trimcraft.utils.ParticleUtils;
 import org.bukkit.Location;
@@ -26,15 +27,21 @@ public class BoltLightningStrike extends TrimAbility {
 
     @Override
     protected void execute(Player player) {
-        double damage = plugin.getTrimConfig().getDouble("bolt.lightning-strike.damage", 6.0);
-        double radius = plugin.getTrimConfig().getDouble("bolt.lightning-strike.radius", 3.0);
-        int stunDur = plugin.getTrimConfig().getInt("bolt.lightning-strike.stun-duration", 40);
+        double damage = Math.max(0.0, plugin.getTrimConfig().getDouble("bolt.lightning-strike.damage", 6.0));
+        double radius = Math.max(0.0, plugin.getTrimConfig().getDouble("bolt.lightning-strike.radius", 3.0));
+        int stunDur = Math.max(0, plugin.getTrimConfig().getInt("bolt.lightning-strike.stun-duration", 40));
 
-        Location target = player.getTargetBlock(null, 30).getLocation().add(0, 1, 0);
+        org.bukkit.block.Block targetBlock = player.getTargetBlockExact(30);
+        if (targetBlock == null) {
+            MessageUtils.sendPrefixedMessage(player, "&cAim at a block within 30 blocks to call the strike.");
+            cancelCooldownForActivation(player);
+            return;
+        }
+        Location target = targetBlock.getLocation().add(0.5, 1, 0.5);
         player.getWorld().strikeLightningEffect(target);
 
         for (Entity entity : player.getWorld().getNearbyEntities(target, radius, radius, radius)) {
-            if (entity == player || !(entity instanceof LivingEntity living)) continue;
+            if (!(entity instanceof LivingEntity living) || !CombatUtils.canTarget(player, entity)) continue;
             living.damage(damage, player);
             if (entity instanceof Player hit) {
                 hit.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, stunDur, 5, false, true));

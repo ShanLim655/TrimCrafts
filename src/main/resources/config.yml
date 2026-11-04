@@ -292,6 +292,8 @@ tide:
   tsunami:
     wave-radius: 10.0
     knockback-power: 3.0
+    damage: 4.0
+    slowness-duration: 40
     require-full-set: false
   abyssal-form:
     water-breathing-duration: 400
