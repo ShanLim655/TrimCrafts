@@ -88,7 +88,7 @@ public class TrimLoreManager {
 
         for (int index = 0; index < abilities.length; index++) {
             TrimAbility ability = abilities[index];
-            lore.add(ChatColor.YELLOW + (index + 1) + ". " + ChatColor.WHITE + ability.getName());
+            lore.add(ChatColor.YELLOW.toString() + (index + 1) + ". " + ChatColor.WHITE + ability.getName());
             String keybind = ability.getType() == TrimAbility.AbilityType.LEFT_CLICK
                     ? "Sneak + Left Click" : "Sneak + Right Click";
             lore.add(ChatColor.GRAY + "Keybind: " + ChatColor.AQUA + keybind);
@@ -96,7 +96,7 @@ public class TrimLoreManager {
             lore.add("");
         }
 
-        lore.add(ChatColor.DARK_GRAY + ChatColor.ITALIC + "Full matching trim set required unless configured otherwise.");
+        lore.add(ChatColor.DARK_GRAY.toString() + ChatColor.ITALIC + "Full matching trim set required unless configured otherwise.");
         return lore;
     }
 

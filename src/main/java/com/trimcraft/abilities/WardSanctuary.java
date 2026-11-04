@@ -43,7 +43,7 @@ public class WardSanctuary extends TrimAbility {
 
             for (Entity entity : anchor.getWorld().getNearbyEntities(anchor, radius, radius, radius)) {
                 if (!(entity instanceof Player ally) || !CombatUtils.areAllies(player, ally)) continue;
-                if (ally.getAttribute(Attribute.MAX_HEALTH) == null) continue;
+                if (ally.getAttribute(Attribute.GENERIC_MAX_HEALTH) == null) continue;
                 double maxHealth = ally.getAttribute(Attribute.MAX_HEALTH).getValue();
                 ally.setHealth(Math.min(maxHealth, ally.getHealth() + healPerSec));
                 ParticleUtils.spawnColoredDust(ally.getLocation().add(0, 1, 0), 100, 255, 100, 1f, 5);
