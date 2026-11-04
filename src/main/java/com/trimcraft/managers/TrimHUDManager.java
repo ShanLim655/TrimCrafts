@@ -13,12 +13,12 @@ public class TrimHUDManager {
 
     private final TrimCraftPlugin plugin;
     private final Map<UUID, Scoreboard> playerBoards = new HashMap<>();
+    private final Map<UUID, Scoreboard> previousBoards = new HashMap<>();
 
     public TrimHUDManager(TrimCraftPlugin plugin) {
         this.plugin = plugin;
     }
 
-    @SuppressWarnings("deprecation")
     public void showHUD(Player player, String trimKey) {
         if (!plugin.getTrimConfig().isShowHUD()) {
             hideHUD(player);
@@ -26,93 +26,87 @@ public class TrimHUDManager {
         }
 
         TrimAbility[] abilities = plugin.getAbilityManager().getAbilities(trimKey);
-        if (abilities == null || abilities.length == 0) return;
+        if (abilities.length == 0) return;
 
-        String trimName = capitalize(trimKey);
+        ScoreboardManager manager = Bukkit.getScoreboardManager();
+        if (manager == null) return;
 
-        ScoreboardManager sm = Bukkit.getScoreboardManager();
-        Scoreboard board = sm.getNewScoreboard();
+        UUID uuid = player.getUniqueId();
+        previousBoards.putIfAbsent(uuid, player.getScoreboard());
 
-        Objective obj = board.registerNewObjective("trimhud", "dummy",
-                ChatColor.GOLD + "" + ChatColor.BOLD + trimName + " Trim");
-        obj.setDisplaySlot(DisplaySlot.SIDEBAR);
+        Scoreboard board = manager.getNewScoreboard();
+        Objective objective = board.registerNewObjective(
+                "trimhud",
+                Criteria.DUMMY,
+                ChatColor.GOLD + "" + ChatColor.BOLD + capitalize(trimKey) + " Trim"
+        );
+        objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 
-        List<String> lines = buildHUDLines(trimName, abilities);
-
+        List<String> lines = buildHUDLines(abilities);
         for (int i = 0; i < lines.size(); i++) {
-            String entry = lines.get(i);
-            Score score = obj.getScore(padEntry(entry, i));
-            score.setScore(lines.size() - i);
+            objective.getScore(padEntry(lines.get(i), i)).setScore(lines.size() - i);
         }
 
-        playerBoards.put(player.getUniqueId(), board);
+        playerBoards.put(uuid, board);
         player.setScoreboard(board);
     }
 
     public void hideHUD(Player player) {
-        playerBoards.remove(player.getUniqueId());
-        ScoreboardManager sm = Bukkit.getScoreboardManager();
-        if (sm != null) {
-            player.setScoreboard(sm.getMainScoreboard());
-        }
+        UUID uuid = player.getUniqueId();
+        playerBoards.remove(uuid);
+        Scoreboard previous = previousBoards.remove(uuid);
+        if (previous != null) player.setScoreboard(previous);
     }
 
     public void hideAll() {
         for (UUID uuid : new HashSet<>(playerBoards.keySet())) {
-            Player p = Bukkit.getPlayer(uuid);
-            if (p != null) hideHUD(p);
+            Player player = Bukkit.getPlayer(uuid);
+            if (player != null) hideHUD(player);
         }
         playerBoards.clear();
+        previousBoards.clear();
     }
 
-    private List<String> buildHUDLines(String trimName, TrimAbility[] abilities) {
-        boolean showNames   = plugin.getTrimConfig().isHudShowAbilityNames();
-        boolean showKeybind = plugin.getTrimConfig().isHudShowKeybinds();
-        boolean showDesc    = plugin.getTrimConfig().isHudShowDescriptions();
-        boolean showSep     = plugin.getTrimConfig().isHudShowSeparator();
+    private List<String> buildHUDLines(TrimAbility[] abilities) {
+        boolean showNames = plugin.getTrimConfig().isHudShowAbilityNames();
+        boolean showKeybinds = plugin.getTrimConfig().isHudShowKeybinds();
+        boolean showDescriptions = plugin.getTrimConfig().isHudShowDescriptions();
+        boolean showSeparator = plugin.getTrimConfig().isHudShowSeparator();
 
         List<String> lines = new ArrayList<>();
-        if (showSep) lines.add(ChatColor.DARK_GRAY + "▔▔▔▔▔▔▔▔▔▔▔▔▔");
+        if (showSeparator) lines.add(ChatColor.DARK_GRAY + "────────────");
 
-        if (abilities.length > 0) {
-            TrimAbility a1 = abilities[0];
-            if (showNames)   lines.add(ChatColor.GRAY + "" + ChatColor.ITALIC + a1.getName());
-            if (showKeybind) lines.add(ChatColor.DARK_AQUA + "  Sneak + L-Click");
-            if (showDesc) {
-                String short1 = truncate(a1.getDescription(), 22);
-                lines.add(ChatColor.DARK_GRAY + "" + ChatColor.ITALIC + "  " + short1);
+        for (int index = 0; index < abilities.length; index++) {
+            TrimAbility ability = abilities[index];
+            if (index > 0) lines.add("");
+            if (showNames) lines.add(ChatColor.WHITE + ability.getName());
+            if (showKeybinds) {
+                String keybind = ability.getType() == TrimAbility.AbilityType.LEFT_CLICK
+                        ? "Sneak + L-Click" : "Sneak + R-Click";
+                lines.add(ChatColor.AQUA + keybind);
+            }
+            if (showDescriptions) {
+                String description = ability.getDescription();
+                lines.add(ChatColor.GRAY + truncate(description, 30));
             }
         }
 
-        lines.add("");
-
-        if (abilities.length > 1) {
-            TrimAbility a2 = abilities[1];
-            if (showNames)   lines.add(ChatColor.GRAY + "" + ChatColor.ITALIC + a2.getName());
-            if (showKeybind) lines.add(ChatColor.DARK_AQUA + "  Sneak + R-Click");
-            if (showDesc) {
-                String short2 = truncate(a2.getDescription(), 22);
-                lines.add(ChatColor.DARK_GRAY + "" + ChatColor.ITALIC + "  " + short2);
-            }
-        }
-
-        if (showSep) lines.add(ChatColor.DARK_GRAY + "▔▔▔▔▔▔▔▔▔▔▔▔▔");
+        if (showSeparator) lines.add(ChatColor.DARK_GRAY + "────────────");
         return lines;
     }
 
-    private String truncate(String s, int max) {
-        if (s.length() <= max) return s;
-        return s.substring(0, max - 2) + "..";
+    private String truncate(String value, int maxLength) {
+        if (value.length() <= maxLength) return value;
+        return value.substring(0, maxLength - 1) + "…";
     }
 
-    private String capitalize(String s) {
-        if (s == null || s.isEmpty()) return s;
-        return s.substring(0, 1).toUpperCase() + s.substring(1);
+    private String capitalize(String value) {
+        return value == null || value.isEmpty()
+                ? value
+                : value.substring(0, 1).toUpperCase(Locale.ROOT) + value.substring(1);
     }
 
     private String padEntry(String base, int index) {
-        StringBuilder sb = new StringBuilder(base);
-        for (int i = 0; i < index; i++) sb.append(ChatColor.RESET);
-        return sb.toString();
+        return base + ChatColor.values()[index % ChatColor.values().length];
     }
 }

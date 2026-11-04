@@ -9,6 +9,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
 
 public class PlayerInputListener implements Listener {
 
@@ -18,39 +19,35 @@ public class PlayerInputListener implements Listener {
         this.plugin = plugin;
     }
 
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = false)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPlayerInteract(PlayerInteractEvent event) {
+        if (event.getHand() == EquipmentSlot.OFF_HAND) return;
+
         Player player = event.getPlayer();
-        if (!player.isSneaking()) return;
+        if (!player.isSneaking() || !player.hasPermission("trimcraft.use")) return;
 
-        String trim = TrimUtils.getFullSetTrim(player);
-        if (trim == null) {
-            // Try any trim if full set not required
-            trim = TrimUtils.getAnyTrim(player);
-            if (trim == null) return;
-        }
+        Action action = event.getAction();
+        boolean leftClick = action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK;
+        boolean rightClick = action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK;
+        if (!leftClick && !rightClick) return;
 
-        if (!plugin.getAbilityManager().hasTrim(trim)) return;
+        String fullSetTrim = TrimUtils.getFullSetTrim(player);
+        String trim = fullSetTrim != null ? fullSetTrim : TrimUtils.getAnyTrim(player);
+        if (trim == null || !plugin.getAbilityManager().hasTrim(trim)) return;
         if (!plugin.getTrimConfig().isTrimEnabled(trim)) return;
         if (!player.hasPermission("trimcraft.trim." + trim)) return;
 
-        Action action = event.getAction();
-        boolean isLeftClick = (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK);
-        boolean isRightClick = (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK);
-
-        if (!isLeftClick && !isRightClick) return;
-
-        TrimAbility.AbilityType type = isLeftClick
+        TrimAbility.AbilityType type = leftClick
                 ? TrimAbility.AbilityType.LEFT_CLICK
                 : TrimAbility.AbilityType.RIGHT_CLICK;
 
-        TrimAbility[] abilities = plugin.getAbilityManager().getAbilities(trim);
-        for (TrimAbility ability : abilities) {
-            if (ability.getType() == type) {
-                event.setCancelled(true);
-                plugin.getServer().getScheduler().runTask(plugin, () -> ability.activate(player));
-                break;
-            }
+        for (TrimAbility ability : plugin.getAbilityManager().getAbilities(trim)) {
+            if (ability.getType() != type) continue;
+            if (fullSetTrim == null && plugin.getTrimConfig().isFullSetRequired(ability)) return;
+
+            event.setCancelled(true);
+            plugin.getServer().getScheduler().runTask(plugin, () -> ability.activate(player));
+            return;
         }
     }
 }

@@ -9,7 +9,6 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.List;
 
 public class SilenceLifeForceSuction extends TrimAbility {
 
@@ -59,7 +58,7 @@ public class SilenceLifeForceSuction extends TrimAbility {
 
             ParticleUtils.spawnDrainBeam(player, target);
             ParticleUtils.spawnAuraRing(player, 150, 0, 200);
-            ticksLeft[0]--;
+            ticksLeft[0] -= 2;
         }, 0L, 2L);
 
         plugin.getActiveEffectsManager().registerTask(player, "life-force", task);

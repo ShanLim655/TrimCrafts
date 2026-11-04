@@ -3,6 +3,7 @@ package com.trimcraft.abilities;
 import com.trimcraft.TrimCraftPlugin;
 import com.trimcraft.utils.MessageUtils;
 import com.trimcraft.utils.ParticleUtils;
+import com.trimcraft.utils.TargetUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -27,10 +28,10 @@ public class EyeCurseOfSight extends TrimAbility {
         int blindDur = plugin.getTrimConfig().getInt("eye.curse-of-sight.blindness-duration", 100);
         int glowDur = plugin.getTrimConfig().getInt("eye.curse-of-sight.glowing-duration", 100);
 
-        Player target = getNearestPlayer(player, range);
+        Player target = TargetUtils.getLookTargetPlayer(player, range);
         if (target == null) {
             MessageUtils.sendPrefixedMessage(player, "&cNo target in range!");
-            cooldownManager.clearCooldown(player, getCooldownKey());
+            cancelCooldownForActivation(player);
             return;
         }
 
@@ -44,14 +45,4 @@ public class EyeCurseOfSight extends TrimAbility {
         MessageUtils.sendPrefixedMessage(target, "&eThe Eye &7sees all — you cannot hide.");
     }
 
-    private Player getNearestPlayer(Player source, double range) {
-        Player nearest = null;
-        double dist = range * range;
-        for (Player p : source.getWorld().getPlayers()) {
-            if (p == source) continue;
-            double d = source.getLocation().distanceSquared(p.getLocation());
-            if (d < dist) { dist = d; nearest = p; }
-        }
-        return nearest;
-    }
 }

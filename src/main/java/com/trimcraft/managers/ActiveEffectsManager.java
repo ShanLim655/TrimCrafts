@@ -19,24 +19,36 @@ public class ActiveEffectsManager {
 
     public void registerTask(Player player, String key, BukkitTask task) {
         cancelTask(player, key);
-        activeTasks.computeIfAbsent(player.getUniqueId(), k -> new HashMap<>()).put(key, task);
+        activeTasks.computeIfAbsent(player.getUniqueId(), ignored -> new HashMap<>()).put(key, task);
+    }
+
+    public void unregisterTask(Player player, String key) {
+        Map<String, BukkitTask> tasks = activeTasks.get(player.getUniqueId());
+        if (tasks == null) return;
+        tasks.remove(key);
+        if (tasks.isEmpty()) activeTasks.remove(player.getUniqueId());
     }
 
     public void cancelTask(Player player, String key) {
-        Map<String, BukkitTask> map = activeTasks.get(player.getUniqueId());
-        if (map != null) {
-            BukkitTask t = map.remove(key);
-            if (t != null) t.cancel();
-        }
+        Map<String, BukkitTask> tasks = activeTasks.get(player.getUniqueId());
+        if (tasks == null) return;
+        BukkitTask task = tasks.remove(key);
+        if (task != null) task.cancel();
+        if (tasks.isEmpty()) activeTasks.remove(player.getUniqueId());
     }
 
     public void cancelAll(Player player) {
-        Map<String, BukkitTask> map = activeTasks.remove(player.getUniqueId());
-        if (map != null) map.values().forEach(BukkitTask::cancel);
+        Map<String, BukkitTask> tasks = activeTasks.remove(player.getUniqueId());
+        if (tasks != null) tasks.values().forEach(BukkitTask::cancel);
+    }
+
+    public void cancelAll() {
+        activeTasks.values().forEach(tasks -> tasks.values().forEach(BukkitTask::cancel));
+        activeTasks.clear();
     }
 
     public boolean hasActiveEffect(Player player, String key) {
-        Map<String, BukkitTask> map = activeTasks.get(player.getUniqueId());
-        return map != null && map.containsKey(key);
+        Map<String, BukkitTask> tasks = activeTasks.get(player.getUniqueId());
+        return tasks != null && tasks.containsKey(key);
     }
 }

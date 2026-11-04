@@ -1,16 +1,22 @@
 package com.trimcraft.utils;
 
+import com.trimcraft.config.TrimCraftConfig;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ArmorMeta;
 import org.bukkit.inventory.meta.trim.ArmorTrim;
 
-public class TrimUtils {
+import java.util.Locale;
+
+public final class TrimUtils {
+
+    private TrimUtils() {
+    }
 
     public static String getFullSetTrim(Player player) {
         ItemStack[] armor = player.getInventory().getArmorContents();
-        if (armor == null) return null;
+        if (armor == null || armor.length != 4) return null;
 
         String trim = null;
         for (ItemStack piece : armor) {
@@ -32,9 +38,10 @@ public class TrimUtils {
         ItemStack[] armor = player.getInventory().getArmorContents();
         if (armor == null) return null;
         for (ItemStack piece : armor) {
-            if (piece != null && piece.getItemMeta() instanceof ArmorMeta meta) {
-                ArmorTrim armorTrim = meta.getTrim();
-                if (armorTrim != null) return armorTrim.getPattern().getKey().getKey();
+            if (piece != null && piece.getType() != Material.AIR
+                    && piece.getItemMeta() instanceof ArmorMeta meta
+                    && meta.getTrim() != null) {
+                return meta.getTrim().getPattern().getKey().getKey();
             }
         }
         return null;
@@ -42,32 +49,36 @@ public class TrimUtils {
 
     public static boolean hasFullSet(Player player) {
         ItemStack[] armor = player.getInventory().getArmorContents();
-        if (armor == null) return false;
+        if (armor == null || armor.length != 4) return false;
         for (ItemStack piece : armor) {
             if (piece == null || piece.getType() == Material.AIR) return false;
         }
         return true;
     }
 
-    public static double getArmorMultiplier(Player player) {
+    public static double getArmorMultiplier(Player player, TrimCraftConfig config) {
         ItemStack boots = player.getInventory().getBoots();
         if (boots == null) return 1.0;
-        return switch (boots.getType()) {
-            case NETHERITE_BOOTS -> 1.4;
-            case DIAMOND_BOOTS -> 1.0;
-            case IRON_BOOTS -> 0.8;
-            case GOLDEN_BOOTS -> 0.75;
-            case CHAINMAIL_BOOTS -> 0.7;
+
+        String material = boots.getType().name().toLowerCase(Locale.ROOT).replace("_boots", "");
+        if (material.equals("golden")) material = "gold";
+        return config.getDouble("silence.life-force-suction.multipliers." + material, switch (material) {
+            case "netherite" -> 1.4;
+            case "diamond" -> 1.0;
+            case "iron" -> 0.8;
+            case "gold" -> 0.75;
+            case "chainmail" -> 0.7;
             default -> 0.6;
-        };
+        });
     }
 
     public static String formatTrimName(String key) {
-        if (key == null) return "None";
-        return key.substring(0, 1).toUpperCase() + key.substring(1).replace("_", " ");
+        if (key == null || key.isBlank()) return "None";
+        String normalized = key.replace('_', ' ');
+        return normalized.substring(0, 1).toUpperCase(Locale.ROOT) + normalized.substring(1);
     }
 
-    public static String colorize(String s) {
-        return s.replace("&", "\u00A7");
+    public static String colorize(String value) {
+        return value == null ? "" : value.replace("&", "\u00A7");
     }
 }

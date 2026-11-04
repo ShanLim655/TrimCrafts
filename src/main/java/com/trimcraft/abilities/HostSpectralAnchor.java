@@ -2,6 +2,7 @@ package com.trimcraft.abilities;
 
 import com.trimcraft.TrimCraftPlugin;
 import com.trimcraft.utils.MessageUtils;
+import com.trimcraft.utils.CombatUtils;
 import com.trimcraft.utils.ParticleUtils;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -28,7 +29,7 @@ public class HostSpectralAnchor extends TrimAbility {
 
         if (target == null) {
             MessageUtils.sendPrefixedMessage(player, "&cNo target in spectral range!");
-            cooldownManager.clearCooldown(player, getCooldownKey());
+            cancelCooldownForActivation(player);
             return;
         }
 
@@ -40,7 +41,7 @@ public class HostSpectralAnchor extends TrimAbility {
 
         // Draw spectral chain
         double dist = from.distance(to);
-        int steps = (int)(dist * 3);
+        int steps = Math.max(1, (int) (dist * 3));
         for (int i = 0; i <= steps; i++) {
             double t = (double) i / steps;
             Location p = from.clone().add(
@@ -59,7 +60,7 @@ public class HostSpectralAnchor extends TrimAbility {
         Player nearest = null;
         double dist = range * range;
         for (Player p : source.getWorld().getPlayers()) {
-            if (p == source) continue;
+            if (!CombatUtils.canTarget(source, p)) continue;
             double d = source.getLocation().distanceSquared(p.getLocation());
             if (d < dist) { dist = d; nearest = p; }
         }

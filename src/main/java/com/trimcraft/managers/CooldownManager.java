@@ -7,6 +7,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -25,9 +26,7 @@ public class CooldownManager implements Listener {
     public void onJoin(PlayerJoinEvent event) {
         UUID uuid = event.getPlayer().getUniqueId();
         Map<String, Long> loaded = plugin.getDatabaseManager().loadCooldowns(uuid);
-        if (!loaded.isEmpty()) {
-            cooldowns.put(uuid, loaded);
-        }
+        cooldowns.put(uuid, loaded);
     }
 
     @EventHandler
@@ -35,7 +34,7 @@ public class CooldownManager implements Listener {
         UUID uuid = event.getPlayer().getUniqueId();
         Map<String, Long> map = cooldowns.remove(uuid);
         if (map != null && !map.isEmpty()) {
-            plugin.getDatabaseManager().saveAllCooldownsAsync(Map.of(uuid, map));
+            plugin.getDatabaseManager().saveAllCooldownsAsync(Map.of(uuid, new HashMap<>(map)));
         }
     }
 
@@ -43,8 +42,7 @@ public class CooldownManager implements Listener {
         Map<String, Long> map = cooldowns.get(player.getUniqueId());
         if (map == null) return false;
         Long expiry = map.get(ability);
-        if (expiry == null) return false;
-        return System.currentTimeMillis() < expiry;
+        return expiry != null && System.currentTimeMillis() < expiry;
     }
 
     public long getRemainingSeconds(Player player, String ability) {
@@ -57,8 +55,9 @@ public class CooldownManager implements Listener {
     }
 
     public void setCooldown(Player player, String ability, int seconds) {
-        long expiry = System.currentTimeMillis() + (seconds * 1000L);
-        cooldowns.computeIfAbsent(player.getUniqueId(), k -> new HashMap<>()).put(ability, expiry);
+        if (seconds <= 0) return;
+        long expiry = System.currentTimeMillis() + seconds * 1000L;
+        cooldowns.computeIfAbsent(player.getUniqueId(), ignored -> new HashMap<>()).put(ability, expiry);
         plugin.getDatabaseManager().saveCooldownAsync(player.getUniqueId(), ability, expiry);
     }
 
@@ -66,8 +65,9 @@ public class CooldownManager implements Listener {
         Map<String, Long> map = cooldowns.get(player.getUniqueId());
         if (map != null) {
             map.remove(ability);
-            plugin.getDatabaseManager().deleteCooldown(player.getUniqueId(), ability);
+            if (map.isEmpty()) cooldowns.remove(player.getUniqueId());
         }
+        plugin.getDatabaseManager().deleteCooldown(player.getUniqueId(), ability);
     }
 
     public void clearAll() {
@@ -75,14 +75,17 @@ public class CooldownManager implements Listener {
     }
 
     public Map<String, Long> getPlayerCooldowns(Player player) {
-        return cooldowns.getOrDefault(player.getUniqueId(), new HashMap<>());
+        Map<String, Long> map = cooldowns.get(player.getUniqueId());
+        return map == null ? Collections.emptyMap() : Collections.unmodifiableMap(new HashMap<>(map));
     }
 
     public Map<UUID, Map<String, Long>> getAllCooldowns() {
-        return new HashMap<>(cooldowns);
+        Map<UUID, Map<String, Long>> copy = new HashMap<>();
+        cooldowns.forEach((uuid, map) -> copy.put(uuid, new HashMap<>(map)));
+        return copy;
     }
 
     public void saveCooldowns() {
-        plugin.getDatabaseManager().saveAllCooldownsAsync(new HashMap<>(cooldowns));
+        plugin.getDatabaseManager().saveAllCooldowns(getAllCooldowns());
     }
 }

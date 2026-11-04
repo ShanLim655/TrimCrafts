@@ -1,6 +1,7 @@
 package com.trimcraft.abilities;
 
 import com.trimcraft.TrimCraftPlugin;
+import com.trimcraft.utils.CombatUtils;
 import com.trimcraft.utils.MessageUtils;
 import com.trimcraft.utils.ParticleUtils;
 import org.bukkit.entity.Entity;
@@ -16,7 +17,7 @@ public class SnoutWarCry extends TrimAbility {
 
     @Override public String getName() { return "War Cry"; }
     @Override public String getDescription() {
-        return "Let loose a thunderous war cry — empowering all nearby allies with strength and striking fear into enemies.";
+        return "Rally nearby allies, granting them strength and haste for 5 seconds.";
     }
     @Override public String getCooldownKey() { return "snout-war-cry"; }
     @Override public int getDefaultCooldown() { return 45; }
@@ -24,12 +25,13 @@ public class SnoutWarCry extends TrimAbility {
 
     @Override
     protected void execute(Player player) {
-        double radius = plugin.getTrimConfig().getDouble("snout.war-cry.radius", 10.0);
-        int duration = plugin.getTrimConfig().getInt("snout.war-cry.strength-duration", 100);
-
+        double radius = Math.max(0.0, plugin.getTrimConfig().getDouble("snout.war-cry.radius", 10.0));
+        int duration = Math.max(1, plugin.getTrimConfig().getInt("snout.war-cry.strength-duration", 100));
         int buffed = 0;
+
         for (Entity entity : player.getWorld().getNearbyEntities(player.getLocation(), radius, radius, radius)) {
-            if (!(entity instanceof Player ally)) continue;
+            if (!(entity instanceof Player ally) || !CombatUtils.areAllies(player, ally)) continue;
+
             ally.addPotionEffect(new PotionEffect(PotionEffectType.STRENGTH, duration, 1, false, true));
             ally.addPotionEffect(new PotionEffect(PotionEffectType.HASTE, duration, 0, false, true));
             if (ally != player) {
