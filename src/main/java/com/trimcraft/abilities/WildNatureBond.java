@@ -44,7 +44,7 @@ public class WildNatureBond extends TrimAbility {
             }
 
             if (healPerSec > 0.0 && player.getAttribute(Attribute.GENERIC_MAX_HEALTH) != null) {
-                double maxHealth = player.getAttribute(Attribute.MAX_HEALTH).getValue();
+                double maxHealth = player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
                 player.setHealth(Math.min(maxHealth, player.getHealth() + healPerSec));
             }
 
